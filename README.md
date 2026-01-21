@@ -14,7 +14,7 @@ Please see the [LICENSE file](/LICENSE) for more information.
 
 ## Owner International Id
 
-The copyright owner has the following international identifier :
+The licensed owner has the following international identifier :
 iid{80a11b77a52aa9eeed80c9d37dcb7878519289d40beeddb40bb23a60d2711963}
 
 ## Credits
