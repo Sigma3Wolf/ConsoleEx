@@ -1,4 +1,4 @@
-<img src="/images/cSharp.png" align="right" height="128"/>
+<img src="/images/cSharp.png" align="right" height="96"/>
 
 # ConsoleEx
 new Application Console definition
