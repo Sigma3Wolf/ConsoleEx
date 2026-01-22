@@ -22,7 +22,7 @@ This library definition allow you to modify C# Console application into somethin
 - Scripting
 
 ## Documentation
-La [documentation](/documentation/DOCUMENTATION.md) est disponible en cliquant sur ce lien.
+La [documentation](/documentation/DOCUMENTATION.md) est disponible en cliquant sur le lien.
 
 ## Dependency
 	Newtonsoft.Json
