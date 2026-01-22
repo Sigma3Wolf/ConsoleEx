@@ -2,6 +2,7 @@
 
 namespace ConsoleEx {
     internal class Program {
+        
         //NOTE: I'm using .Net Core 8.0 because it is a LTS and .Net Core 9 is now expired.
         //      but it work on .Net Core 10
         static void Main(string[] args) {
@@ -12,7 +13,7 @@ namespace ConsoleEx {
 
             //First we create the MANDATORY Console object
             using ConsoleAppEx objConsole = new ConsoleAppEx();
-
+            
             //Not at all mandatory but just for the example...
             Console.Clear();
 
@@ -119,7 +120,7 @@ namespace ConsoleEx {
             //If you Mouse Click the App X, it will also exit
             //Soon I'll add that you'll not have to define Event Handling for Clicking the X => Exit
         }
-
+        
         private static void AddCustomSettings(ConsoleAppEx objConsole) {
             #region ** MANDATORY Console Event handling **
             //Ok, this doesn't seem right:
