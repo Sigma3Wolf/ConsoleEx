@@ -24,7 +24,10 @@ namespace PrototypeOmega;
 #pragma warning restore IDE0130
 #endregion PrototypeOmega namespace
 
-#region DO NOT OPEN, SEE SettingsJson_Data
+// ** DON'T MESS WITH THIS FILE, THERE IS NOTHING HERE TO MODIFY      ** //
+// ** only \Customized\vcxSettingsJson_data.cs should be modified     ** //
+// ** If you find a bug related to the current file, please notify me ** //
+#region DO NOT OPEN, SEE \Customized\vcxSettingsJson_data.cs
 internal static class JsonSettings {
 	public static PrototypeOmega.Sealed.JsonSettingsData_RESTRICTED data = new PrototypeOmega.Sealed.JsonSettingsData_RESTRICTED();
 
@@ -88,4 +91,4 @@ internal static class JsonSettings {
 		}
 	}
 }
-#endregion DO NOT OPEN, SEE SettingsJson_Data
+#endregion DO NOT OPEN, SEE \Customized\vcxSettingsJson_data.cs

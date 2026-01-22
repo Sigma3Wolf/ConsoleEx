@@ -7,4 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="PrototypeOmega\Customized\**" />
+    <EmbeddedResource Remove="PrototypeOmega\Customized\**" />
+    <None Remove="PrototypeOmega\Customized\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
 </Project>
