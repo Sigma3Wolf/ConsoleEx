@@ -120,12 +120,12 @@ namespace ConsoleEx {
 
         private static void AddCustomSettings(ConsoleAppEx objConsole) {
             #region ** MANDATORY Console Event handling **
-            //MANDATORY for your App event to work
-            objConsole.ConsoleEvent += ConsoleEvent.OnConsoleEvent;
+            //Ok, this doesn't look right:
+            //  We create object ConsoleEvent (non static) and we give him the ConsoleAppEx object but
+            //  it's coming from static AddCustomSettings. How come ConsoleEvent consoleAppEx is not destroyed
+            // when static void AddCustomSettings Exit ???
+            ConsoleEvent consoleAppEx = new(objConsole);
             #endregion ** MANDATORY Console Event handling **
-
-            // This allow to save settings on exit
-            AppDomain.CurrentDomain.ProcessExit += ConsoleEvent.OnConsoleAppClosing;
 
             // this one don't work completely for now
             // it's for preventing scrolling console. We want a 1 page application where you can use multiple form
@@ -220,7 +220,20 @@ namespace ConsoleEx {
     }
 
     //This class is used for Events (Keyboard, Mouse and OnConsoleAppClosing)
-    internal static class ConsoleEvent {
+    internal class ConsoleEvent {
+        #region DON'T TOUCH THAT PART
+        //that's our parent object
+        private ConsoleAppEx _objConsole;
+
+        public ConsoleEvent(ConsoleAppEx pobjConsole) {
+            _objConsole = pobjConsole;
+            _objConsole.ConsoleEvent += ConsoleEvent.OnConsoleEvent;
+
+            // This allow to save settings on exit
+            AppDomain.CurrentDomain.ProcessExit += ConsoleEvent.OnConsoleAppClosing;
+        }
+        #endregion DON'T TOUCH THAT PART
+
         public static void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
             //This is where we receive Keyboard and Mouse Events
             HandleConsoleButtonEvent objHandleConsoleButtonEvent = new HandleConsoleButtonEvent(e);
