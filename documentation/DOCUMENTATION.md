@@ -1,5 +1,2 @@
-## Documentation
-Hopefully coming soon...
-
-# Documentation2
+# Documentation
 Hopefully coming soon...
