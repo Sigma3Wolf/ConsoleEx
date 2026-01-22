@@ -26,7 +26,12 @@ Hopefully coming soon...
 
 ## Dependency
 	Newtonsoft.Json
-(only for the Saving/Restoring ability)
+Newtonsoft.Json is only required for the Saving/Restoring capability, you can remove that requirement by removing:
+	- vcxSettingsJson_v2.04.cs
+	- vcxSettingsJson_data.cs
+	- this line: PrototypeOmega.JsonSettings.Read();
+	- this line: PrototypeOmega.JsonSettings.Save();
+	- all lines related to: JsonSettings.data
 
 ## **Visual**
 
