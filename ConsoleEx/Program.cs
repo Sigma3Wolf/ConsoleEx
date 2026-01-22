@@ -2,13 +2,15 @@
 
 namespace ConsoleEx {
     internal class Program {
+        //NOTE: I'm using .Net Core 8.0 because it is a LTS and .Net Core 9 is now expired.
+        //      but it work on .Net Core 10
         static void Main(string[] args) {
             //I have tried to make a simple example of what it can do
             //but it is way more powerfull then this example.
             //I'll add more example and documentation later...
             //If you want to join in, just contact me I'll be glad to help you out.
 
-            //First we create our Console object
+            //First we create the MANDATORY Console object
             using ConsoleAppEx objConsole = new ConsoleAppEx();
 
             //Not at all mandatory but just for the example...

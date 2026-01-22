@@ -5,6 +5,7 @@
 
 # PrototypeOmega BasedOn directory
 BasedOn/
+*.lnk
 
 # User-specific files
 *.rsuser
