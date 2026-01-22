@@ -26,7 +26,7 @@ Hopefully coming soon...
 
 ## Dependency
 	Newtonsoft.Json
-	(only for the Saving/Restoring ability)
+(only for the Saving/Restoring ability)
 
 ## **Visual**
 
