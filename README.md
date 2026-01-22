@@ -22,7 +22,7 @@ This library definition allow you to modify C# Console application into somethin
 - Scripting
 	
 ## Documentation
-[Documentation](https://github.com/Sigma3Wolf/ConsoleEx/documentation/DOCUMENTATION.md)
+[Documentation](/documentation/DOCUMENTATION.md)
 
 ## Dependency
 	Newtonsoft.Json
