@@ -20,9 +20,9 @@ This library definition allow you to modify C# Console application into somethin
 - Form on Form
 - Ansi Animation
 - Scripting
-	
+
 ## Documentation
-[Documentation](/documentation/DOCUMENTATION.md)
+La [documentation](/documentation/DOCUMENTATION.md) est disponible en cliquant sur ce lien.
 
 ## Dependency
 	Newtonsoft.Json
