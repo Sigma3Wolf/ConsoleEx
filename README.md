@@ -22,7 +22,10 @@ This library definition allow you to modify C# Console application into somethin
 - Scripting
 	
 ## Documentation
-	Hopefully coming soon...
+Hopefully coming soon...
+
+## Dependency
+Newtonsoft.Json (only for the Saving/Restoring ability)
 
 **Visual**
 
