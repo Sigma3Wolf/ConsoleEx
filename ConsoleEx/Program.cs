@@ -122,7 +122,7 @@ namespace ConsoleEx {
 
         private static void AddCustomSettings(ConsoleAppEx objConsole) {
             #region ** MANDATORY Console Event handling **
-            //Ok, this doesn't look right:
+            //Ok, this doesn't seem right:
             //  We create object ConsoleEvent (non static) and we give him the ConsoleAppEx object but
             //  it's coming from static AddCustomSettings. How come ConsoleEvent consoleAppEx is not destroyed
             // when static void AddCustomSettings Exit ???
