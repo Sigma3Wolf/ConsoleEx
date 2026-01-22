@@ -130,10 +130,10 @@ public partial class ConsoleAppEx : TextWriter {
 
 							//rec.KeybEvent.dwControlKeyState seem unreliable
 							//rec.KeybEvent.UnicodeChar seem very good
-							this.SetPosition(0, 0);
-							this.Write($"                                                                                      ");
-							this.SetPosition(0, 0);
-							this.Write($"UP {rec.KeybEvent.bKeyDown} {rec.KeybEvent.wVirtualKeyCode} >[{rec.KeybEvent.UnicodeChar}]< [{rec.KeybEvent.dwControlKeyState}]                               ");
+							//this.SetPosition(0, 0);
+							//this.Write($"                                                                                      ");
+							//this.SetPosition(0, 0);
+							//this.Write($"UP {rec.KeybEvent.bKeyDown} {rec.KeybEvent.wVirtualKeyCode} >[{rec.KeybEvent.UnicodeChar}]< [{rec.KeybEvent.dwControlKeyState}]                               ");
 
 							char chrChar = rec.KeybEvent.UnicodeChar;
 							string strChar = chrChar.ToString();

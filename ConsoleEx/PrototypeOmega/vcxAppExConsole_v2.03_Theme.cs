@@ -42,18 +42,21 @@ public partial class ConsoleAppEx : TextWriter {
 		this._FormData.StartY = plngStartY;
 	}
 
-	public void FormEnd(bool blnClearScreen = true) {
-		if (this._FormData != null) {
-			Console.Write("Loading necessary modules...");
-			this._FormData.FormConvert();
+    public void FormEnd(bool pblnShowMessage = true) {
+        if (this._FormData != null) {
+            if (pblnShowMessage) {
+                this.SetPosition(0, 0);
+                Console.Write("Loading necessary modules...");
+                this._FormData.FormConvert();
+                this.SetPosition(0, 0);
+                Console.Write("                            ");
+            } else {
+                this._FormData.FormConvert();
+            }
+        }
+    }
 
-			if (blnClearScreen) {
-				Console.Clear();
-			}
-		}
-	}
-
-	public void FormAddLine(string pstrLine) {
+    public void FormAddLine(string pstrLine) {
 		if (this._FormData != null) {
 			//Add ending CR2
 			//string sCR2 = sCR + "2";
