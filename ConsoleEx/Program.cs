@@ -1,9 +1,6 @@
-﻿namespace ConsoleEx
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
+﻿namespace ConsoleEx {
+    internal class Program {
+        static void Main(string[] args) {
             Console.WriteLine("Hello, World!");
         }
     }
