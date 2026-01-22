@@ -227,14 +227,14 @@ namespace ConsoleEx {
 
         public ConsoleEvent(ConsoleAppEx pobjConsole) {
             _objConsole = pobjConsole;
-            _objConsole.ConsoleEvent += ConsoleEvent.OnConsoleEvent;
+            _objConsole.ConsoleEvent += this.OnConsoleEvent;
 
             // This allow to save settings on exit
-            AppDomain.CurrentDomain.ProcessExit += ConsoleEvent.OnConsoleAppClosing;
+            AppDomain.CurrentDomain.ProcessExit += this.OnConsoleAppClosing;
         }
         #endregion DON'T TOUCH THAT PART
 
-        public static void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
+        public void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
             //This is where we receive Keyboard and Mouse Events
             HandleConsoleButtonEvent objHandleConsoleButtonEvent = new HandleConsoleButtonEvent(e);
 
@@ -285,7 +285,7 @@ namespace ConsoleEx {
             }
         }
 
-        public static void OnConsoleAppClosing(object? sender, EventArgs e) {
+        public void OnConsoleAppClosing(object? sender, EventArgs e) {
             // On App Closing, your settings are saved
             // It is possible to add more stuff to be saved by modifying the
             // class inside \Customized\vcxSettingsJson_data.cs
