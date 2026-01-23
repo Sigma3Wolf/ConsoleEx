@@ -9,17 +9,34 @@ namespace PrototypeOmega;
 #endregion PrototypeOmega namespace
 
 //This class is used for Events (Keyboard, Mouse and OnConsoleAppClosing)
-public class ConsoleHelper {
-    #region DON'T TOUCH THAT PART
-    public ConsoleHelper(ConsoleAppEx pobjConsole) {
-        pobjConsole.ConsoleEvent += this.OnConsoleEvent;
+public static class ConsoleHelper {
+    private static ConsoleAppEx? _objConsole;
+
+    //This is like a constructor for this Static class
+    public static void InitConsoleHelper(ConsoleAppEx pobjConsole) {
+        #region ** MANDATORY Console Event handling **
+        if (pobjConsole == null) {
+            throw new ArgumentNullException("ConsoleAppEx argument is null");
+        }
+        _objConsole = pobjConsole;
+        _objConsole.ConsoleEvent += OnConsoleEvent;
 
         // This allow to save settings on exit
-        AppDomain.CurrentDomain.ProcessExit += this.OnConsoleAppClosing;
-    }
-    #endregion DON'T TOUCH THAT PART
+        AppDomain.CurrentDomain.ProcessExit += OnConsoleAppClosing;
+        #endregion ** MANDATORY Console Event handling **
 
-    public void OnConsoleAppClosing(object? sender, EventArgs e) {
+        // this one don't work completely for now
+        // it's for preventing scrolling console. We want a 1 page application where you can use multiple form
+        _objConsole.DisableScroll = true;
+
+        //Change Cursor size
+        ConsoleAppEx.ChangeCaret(PrototypeOmega.PInvokeEx.CaretSize.Block);
+
+        //We read previously saved data if any
+        PrototypeOmega.JsonSettings.Read();
+    }
+
+    public static void OnConsoleAppClosing(object? sender, EventArgs e) {
         // On App Closing, your settings are saved
         // It is possible to add more stuff to be saved by modifying the
         // class inside \Customized\vcxSettingsJson_data.cs
@@ -28,7 +45,89 @@ public class ConsoleHelper {
         PrototypeOmega.JsonSettings.Save();
     }
 
-    public void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
+    public static void AddCustomColors() {
+        // we need to save that also in Json (not yet)
+        // Customize the original console color
+        _objConsole?.ChangeCustomColor('C', (59, 120, 255));
+        _objConsole?.ChangeCustomColor('E', (97, 214, 214));
+        _objConsole?.ChangeCustomColor('F', (231, 72, 86));
+        _objConsole?.ChangeCustomColor('H', (192, 156, 0));
+        _objConsole?.ChangeCustomColor('I', (118, 118, 118));
+        _objConsole?.ChangeCustomColor('P', (225, 100, 15));
+    }
+
+    public static void CreateCalculatorForm(string pstrMainFormName) {
+        // You only need to run that part to create the Json Settings on your computer
+        // You can add as many form on your computer and just recall them in different program using 
+        // bool blnSuccess = JsonSettings.data.FormCollection.Forms.TryGetValue($"{pstrMainFormName}", out _objFormData);
+        // if (blnSuccess && _objFormData != null) {
+        //   _objConsole.SetActiveForm(_objFormData);
+        // } else {
+        //   //Let's recreate from scratch
+        //   CreateCalculatorForm(this._strMainFormName);
+        // }
+
+        // The color we will use locally to define our form
+        const char sCR = ConsoleAppEx.sCR;
+        const char sCF = ConsoleAppEx.sCF;
+        //const char sCB = ConsoleAppEx.sCB;
+
+        string sCR0 = sCR + "0";    //This do NOTHING, they are replaced immediately with Empty, used for code aligning only in code editor
+        string sCFC = $"{sCF}C";    //Blue
+        string sCFD = $"{sCF}D";    //Green LED digit
+        string sCFE = $"{sCF}E";    //Teal
+        string sCFF = $"{sCF}F";    //Red
+        string sCFH = $"{sCF}H";    //Yellow
+        string sCFI = $"{sCF}I";    //Gray (border)
+        string sCFP = $"{sCF}P";    //Orange (Error)
+
+        // Creating New Form
+        _objConsole?.FormBegin(pstrMainFormName, 5, 0);
+        //_objConsole.FormAddLine($"{sCFI}╬╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╬");
+
+        // ABCD EFGH
+        //   | H  V 
+        //   |------
+        // ╬ | X  X     HDouble linking with VDouble
+        // ┼ |          HSingle linking with VSingle
+        // ╫ |    X     HSingle linking with VDouble
+        // ╪ | X        HDouble linking with VSingle
+
+        // ▞ | {START} of [COPY/PASTE] region	U+259E
+        // ▚ |  {END}  of [COPY/PASTE] region	U+259A
+        // ▌ | {START} of [BUTTON] region		U+258C
+        // ▐ |  {END}  of [BUTTON] region		U+2590
+
+        //This is a Calculator Form
+        _objConsole?.FormAddLine($"{sCFI}    {sCR0}    {sCR0}   {sCR0}   {sCR0}   {sCR0}   {sCR0}  ▌X▐");
+        _objConsole?.FormAddLine($"╬{sCR0}╪╪╪{sCR0}╪╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
+        _objConsole?.FormAddLine($"╬{sCFP} E▞{sCFF}-{sCFD}500,000,000,000{sCFF}.{sCFD}00▚{sCFI}╬");
+        _objConsole?.FormAddLine($"╬╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╬");
+        _objConsole?.FormAddLine($"╬▌{sCFF} C {sCFI}▐┼▌{sCFC}MR {sCFI}▐┼▌{sCFC}M+ {sCFI}▐┼▌{sCFC}M- {sCFI}▐╬");
+        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        _objConsole?.FormAddLine($"╬▌{sCFC}POW{sCFI}▐┼▌{sCFC}MOD{sCFI}▐┼ {sCR0}   {sCR0} ┼ {sCR0}   {sCR0} ╬");
+        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        _objConsole?.FormAddLine($"╬▌{sCFH} 7 {sCFI}▐┼▌{sCFH} 8 {sCFI}▐┼▌{sCFH} 9 {sCFI}▐┼▌{sCFE} + {sCFI}▐╬");
+        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        _objConsole?.FormAddLine($"╬▌{sCFH} 4 {sCFI}▐┼▌{sCFH} 5 {sCFI}▐┼▌{sCFH} 6 {sCFI}▐┼▌{sCFE} - {sCFI}▐╬");
+        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        _objConsole?.FormAddLine($"╬▌{sCFH} 1 {sCFI}▐┼▌{sCFH} 2 {sCFI}▐┼▌{sCFH} 3 {sCFI}▐┼▌{sCFE} * {sCFI}▐╬");
+        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        _objConsole?.FormAddLine($"╬▌{sCFH} 0 {sCFI}▐┼▌{sCFF} . {sCFI}▐┼▌{sCFC}+/-{sCFI}▐┼▌{sCFE} / {sCFI}▐╬");
+        _objConsole?.FormAddLine($"╬╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
+
+        //Giving the command to create the real Form from the template we just give.
+        //It will create the form with Color and Fields (Button)
+
+        //a FormEnd() by default show the message "Loading necessary modules..." at (0, 0)
+        //and erase it when the form is converted. We can disable this by argument false
+        //the convert is time consuming and can take up to 1 second (very slow)
+        _objConsole?.FormEnd(false);
+    }
+
+    public static void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
+        //_objConsole?.ClearScreen();
+
         //This is where we receive Keyboard and Mouse Events
         HandleConsoleButtonEvent objHandleConsoleButtonEvent = new HandleConsoleButtonEvent(e);
 
@@ -77,107 +176,6 @@ public class ConsoleHelper {
                 }
                 break;
         }
-    }
-
-    public static void AddCustomSettings(ConsoleAppEx objConsole) {
-        #region ** MANDATORY Console Event handling **
-        //Ok, this doesn't seem right:
-        //  We create object ConsoleEvent (non static) and we give him the ConsoleAppEx object but
-        //  it's coming from static AddCustomSettings. How come ConsoleEvent consoleAppEx is not destroyed
-        // when static void AddCustomSettings Exit ???
-        //PrototypeOmega.ConsoleAppEx consoleAppEx = new(objConsole);
-        PrototypeOmega.ConsoleHelper consoleAppEx = new(objConsole);
-        #endregion ** MANDATORY Console Event handling **
-
-        // this one don't work completely for now
-        // it's for preventing scrolling console. We want a 1 page application where you can use multiple form
-        objConsole.DisableScroll = true;
-
-        //Change Cursor size
-        ConsoleAppEx.ChangeCaret(PrototypeOmega.PInvokeEx.CaretSize.Block);
-
-        //We read previously saved data if any
-        PrototypeOmega.JsonSettings.Read();
-    }
-
-    public static void AddCustomColors(ConsoleAppEx objConsole) {
-        // we need to save that also in Json (not yet)
-        // Customize the original console color
-        objConsole.ChangeCustomColor('C', (59, 120, 255));
-        objConsole.ChangeCustomColor('E', (97, 214, 214));
-        objConsole.ChangeCustomColor('F', (231, 72, 86));
-        objConsole.ChangeCustomColor('H', (192, 156, 0));
-        objConsole.ChangeCustomColor('I', (118, 118, 118));
-        objConsole.ChangeCustomColor('P', (225, 100, 15));
-    }
-
-    public static void CreateCalculatorForm(ConsoleAppEx objConsole, string pstrMainFormName) {
-        // You only need to run that part to create the Json Settings on your computer
-        // You can add as many form on your computer and just recall them in different program using 
-        // bool blnSuccess = JsonSettings.data.FormCollection.Forms.TryGetValue($"{pstrMainFormName}", out _objFormData);
-        // if (blnSuccess && _objFormData != null) {
-        //   _objConsole.SetActiveForm(_objFormData);
-        // } else {
-        //   //Let's recreate from scratch
-        //   CreateCalculatorForm(this._strMainFormName);
-        // }
-
-        // The color we will use locally to define our form
-        const char sCR = ConsoleAppEx.sCR;
-        const char sCF = ConsoleAppEx.sCF;
-        //const char sCB = ConsoleAppEx.sCB;
-
-        string sCR0 = sCR + "0";    //This do NOTHING, they are replaced immediately with Empty, used for code aligning only in code editor
-        string sCFC = $"{sCF}C";    //Blue
-        string sCFD = $"{sCF}D";    //Green LED digit
-        string sCFE = $"{sCF}E";    //Teal
-        string sCFF = $"{sCF}F";    //Red
-        string sCFH = $"{sCF}H";    //Yellow
-        string sCFI = $"{sCF}I";    //Gray (border)
-        string sCFP = $"{sCF}P";    //Orange (Error)
-
-        // Creating New Form
-        objConsole.FormBegin(pstrMainFormName, 5, 0);
-        //_objConsole.FormAddLine($"{sCFI}╬╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╬");
-
-        // ABCD EFGH
-        //   | H  V 
-        //   |------
-        // ╬ | X  X     HDouble linking with VDouble
-        // ┼ |          HSingle linking with VSingle
-        // ╫ |    X     HSingle linking with VDouble
-        // ╪ | X        HDouble linking with VSingle
-
-        // ▞ | {START} of [COPY/PASTE] region	U+259E
-        // ▚ |  {END}  of [COPY/PASTE] region	U+259A
-        // ▌ | {START} of [BUTTON] region		U+258C
-        // ▐ |  {END}  of [BUTTON] region		U+2590
-
-        //This is a Calculator Form
-        objConsole.FormAddLine($"{sCFI}    {sCR0}    {sCR0}   {sCR0}   {sCR0}   {sCR0}   {sCR0}  ▌X▐");
-        objConsole.FormAddLine($"╬{sCR0}╪╪╪{sCR0}╪╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
-        objConsole.FormAddLine($"╬{sCFP} E▞{sCFF}-{sCFD}500,000,000,000{sCFF}.{sCFD}00▚{sCFI}╬");
-        objConsole.FormAddLine($"╬╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╬");
-        objConsole.FormAddLine($"╬▌{sCFF} C {sCFI}▐┼▌{sCFC}MR {sCFI}▐┼▌{sCFC}M+ {sCFI}▐┼▌{sCFC}M- {sCFI}▐╬");
-        objConsole.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        objConsole.FormAddLine($"╬▌{sCFC}POW{sCFI}▐┼▌{sCFC}MOD{sCFI}▐┼ {sCR0}   {sCR0} ┼ {sCR0}   {sCR0} ╬");
-        objConsole.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        objConsole.FormAddLine($"╬▌{sCFH} 7 {sCFI}▐┼▌{sCFH} 8 {sCFI}▐┼▌{sCFH} 9 {sCFI}▐┼▌{sCFE} + {sCFI}▐╬");
-        objConsole.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        objConsole.FormAddLine($"╬▌{sCFH} 4 {sCFI}▐┼▌{sCFH} 5 {sCFI}▐┼▌{sCFH} 6 {sCFI}▐┼▌{sCFE} - {sCFI}▐╬");
-        objConsole.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        objConsole.FormAddLine($"╬▌{sCFH} 1 {sCFI}▐┼▌{sCFH} 2 {sCFI}▐┼▌{sCFH} 3 {sCFI}▐┼▌{sCFE} * {sCFI}▐╬");
-        objConsole.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        objConsole.FormAddLine($"╬▌{sCFH} 0 {sCFI}▐┼▌{sCFF} . {sCFI}▐┼▌{sCFC}+/-{sCFI}▐┼▌{sCFE} / {sCFI}▐╬");
-        objConsole.FormAddLine($"╬╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
-
-        //Giving the command to create the real Form from the template we just give.
-        //It will create the form with Color and Fields (Button)
-
-        //a FormEnd() by default show the message "Loading necessary modules..." at (0, 0)
-        //and erase it when the form is converted. We can disable this by argument false
-        //the convert is time consuming and can take up to 1 second (very slow)
-        objConsole.FormEnd(false);
     }
 
     public class HandleConsoleButtonEvent {

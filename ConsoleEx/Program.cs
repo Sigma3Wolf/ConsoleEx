@@ -36,10 +36,10 @@ namespace ConsoleEx {
             AppExPath.AppDataPath = AppExPath.enmAppDataPath.AppData;
 
             //Let's define some CustomSettings
-            ConsoleHelper.AddCustomSettings(objConsole);
+            ConsoleHelper.InitConsoleHelper(objConsole);
 
             //Let's customize our Color, thoses Microsoft have provided are hard to read
-            ConsoleHelper.AddCustomColors(objConsole);
+            ConsoleHelper.AddCustomColors();
 
             //lets test our NEW color:
             Console.WriteLine("®CWelcome ®Eto a ®Fnew ®Htype of ®IConsoleApp®A. ®PType®A any Key to continue");
@@ -57,7 +57,7 @@ namespace ConsoleEx {
             string strFormName = ConsoleAppEx.ToPascalCase("Calculator");
 
             //Lets read our saved form if it exist
-            PrototypeOmega.ConsoleAppEx.FormData? _objFormData = null;
+            PrototypeOmega.ConsoleAppEx.FormEx? _objFormData = null;
             bool blnSuccess = JsonSettings.data.FormCollection.Forms.TryGetValue(strFormName, out _objFormData);
             if (blnSuccess && _objFormData != null) {
                 //Ok it exist, let's restore it's definition
@@ -65,10 +65,10 @@ namespace ConsoleEx {
             } else {
                 //Well, you never created that form or it was not saved on your disk,
                 //so here is the definition let's recreate from scratch
-                ConsoleHelper.CreateCalculatorForm(objConsole, strFormName);
+                ConsoleHelper.CreateCalculatorForm(strFormName);
 
                 //Add our object to be saved
-                PrototypeOmega.ConsoleAppEx.FormData objFormData;
+                PrototypeOmega.ConsoleAppEx.FormEx objFormData;
                 objFormData = objConsole.GetActiveForm();
 
                 //Because we want to update our change, we need to remove/add from our collection

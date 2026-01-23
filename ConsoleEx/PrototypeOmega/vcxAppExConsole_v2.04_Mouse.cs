@@ -30,8 +30,8 @@ public partial class ConsoleAppEx : TextWriter {
 	}
 
 	public void WaitForEvent(string pstrFormName) {
-		if (this._FormData != null) {
-			List<string> lstDesign = this._FormData.DesignGet(2);
+		if (this._FormEx != null) {
+			List<string> lstDesign = this._FormEx.DesignGet(pstrFormName, 2);
 
 			EnableMouse();
 			byte[] buffer = new byte[20];
@@ -45,8 +45,8 @@ public partial class ConsoleAppEx : TextWriter {
 
 					if (eventType == PInvokeEx.MOUSE_EVENT) {
 						PInvokeEx.INPUT_MOUSE_Type rec = PInvokeEx.BytesToStruct<PInvokeEx.INPUT_MOUSE_Type>(buffer);
-						int X = rec.MouseEvent.dwMousePosition.X - this.ScreenPos.DeltaX - this._FormData.StartX;
-						int Y = rec.MouseEvent.dwMousePosition.Y - this.ScreenPos.DeltaY - this._FormData.StartY;
+						int X = rec.MouseEvent.dwMousePosition.X - this.ScreenPos.DeltaX - this._FormEx.FormData.StartX;
+						int Y = rec.MouseEvent.dwMousePosition.Y - this.ScreenPos.DeltaY - this._FormEx.FormData.StartY;
 
 						//this.ScreenPos.UpdateXY(0, 0, false);
 						if (rec.MouseEvent.dwEventFlags == PInvokeEx.MOUSE_MOVED) {
@@ -88,13 +88,13 @@ public partial class ConsoleAppEx : TextWriter {
 								//╚═════╧═════╧═════╧═════╝
 
 								//string strField = $"({X:D2}x{Y:D2})";
-								PrototypeOmega.ConsoleAppEx.FormData.FormField objButton = new PrototypeOmega.ConsoleAppEx.FormData.FormField {
+								PrototypeOmega.ConsoleAppEx.FormEx.FormField objButton = new PrototypeOmega.ConsoleAppEx.FormEx.FormField {
 									FormName = pstrFormName.ToUpper(),
 									PosX = X,
 									PosY = Y
 								};
 
-								string strFieldKeySha = this._FormData.FieldSearch(ref objButton);  //will complete [objButton] data
+								string strFieldKeySha = this._FormEx.FieldSearch(ref objButton);  //will complete [objButton] data
 								if (objButton.Length > 0) {
 									if (objButton.FieldType == 0) {
 										this.FlashButtonOn(objButton);
@@ -157,13 +157,13 @@ public partial class ConsoleAppEx : TextWriter {
 		}
 	}
 
-	private void FlashButtonOn(PrototypeOmega.ConsoleAppEx.FormData.FormField pobjButton) {
+	private void FlashButtonOn(PrototypeOmega.ConsoleAppEx.FormEx.FormField pobjButton) {
 		int lngOldX = this.ScreenPos.X;
 		int lngOldY = this.ScreenPos.Y;
 		int lngNewX = pobjButton.StartX;
 		int lngNewY = pobjButton.PosY;
-		string strLabel = this._FormData.ExtractButton(lngNewX, lngNewY, pobjButton.Length);
-		PrototypeOmega.ConsoleAppEx.FormData.FormField objButton = pobjButton with {
+		string strLabel = this._FormEx.ExtractButton(lngNewX, lngNewY, pobjButton.Length);
+		PrototypeOmega.ConsoleAppEx.FormEx.FormField objButton = pobjButton with {
 			PosX = lngOldX,
 			PosY = lngOldY,
 			StartX = lngNewX,
@@ -171,7 +171,7 @@ public partial class ConsoleAppEx : TextWriter {
 			Label = strLabel
 		};
 
-		this.ScreenPos.UpdateXY(lngNewX + this._FormData.StartX, lngNewY + this._FormData.StartY, false);
+		this.ScreenPos.UpdateXY(lngNewX + this._FormEx.FormData.StartX, lngNewY + this._FormEx.FormData.StartY, false);
 		this.Write($"{sCB}N{strLabel}");
 		this.ScreenPos.UpdateXY(lngOldX, lngOldY, false);
 
@@ -179,14 +179,14 @@ public partial class ConsoleAppEx : TextWriter {
 		this.FlashButtonOff(objButton);
 	}
 
-	private long FlashButtonOff(PrototypeOmega.ConsoleAppEx.FormData.FormField pobjButton) {
+	private long FlashButtonOff(PrototypeOmega.ConsoleAppEx.FormEx.FormField pobjButton) {
 		int lngOldX = pobjButton.PosX;
 		int lngOldY = pobjButton.PosY;
 		int lngNewX = pobjButton.StartX;
 		int lngNewY = pobjButton.EndX;
 		string strLabel = pobjButton.Label;
 
-		this.ScreenPos.UpdateXY(lngNewX + this._FormData.StartX, lngNewY + this._FormData.StartY, false);
+		this.ScreenPos.UpdateXY(lngNewX + this._FormEx.FormData.StartX, lngNewY + this._FormEx.FormData.StartY, false);
 		this.Write($"{sCB}B{strLabel}");
 		this.ScreenPos.UpdateXY(lngOldX, lngOldY, false);
 

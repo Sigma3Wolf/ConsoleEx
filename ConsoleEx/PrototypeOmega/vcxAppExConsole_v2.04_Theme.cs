@@ -22,6 +22,7 @@
 #region PrototypeOmega namespace
 #pragma warning disable IDE0130
 using static PrototypeOmega.ConsoleAppEx;
+using static PrototypeOmega.ConsoleAppEx.FormEx;
 
 namespace PrototypeOmega;
 #pragma warning restore IDE0130
@@ -29,7 +30,7 @@ namespace PrototypeOmega;
 
 public partial class ConsoleAppEx : TextWriter {
 	private const string strSYMBOLS = "╚╝╔╗╦╬╤╩╧╠╣╞╡║═ ┌┐└┘┬┼╥╨┴╟╢├┤│─";
-	private FormData _FormData = null;
+	private FormEx _FormEx = null;
 	
 	public void FormBegin(string pstrFormName, int plngStartX, int plngStartY) {
 		string strFormName = ConsoleAppEx.ToPascalCase(pstrFormName);
@@ -37,157 +38,159 @@ public partial class ConsoleAppEx : TextWriter {
 			throw new Exception("FormName must be set");
 		}
 
-		this._FormData = new FormData(this, strFormName);
-		this._FormData.StartX = plngStartX;
-		this._FormData.StartY = plngStartY;
+		this._FormEx = new FormEx(this, strFormName);
+		this._FormEx.FormData.StartX = plngStartX;
+		this._FormEx.FormData.StartY = plngStartY;
 	}
 
     public void FormEnd(bool pblnShowMessage = true) {
-        if (this._FormData != null) {
+        if (this._FormEx != null) {
             if (pblnShowMessage) {
                 this.SetPosition(0, 0);
                 Console.Write("Loading necessary modules...");
-                this._FormData.FormConvert();
+                this._FormEx.FormConvert();
                 this.SetPosition(0, 0);
                 Console.Write("                            ");
             } else {
-                this._FormData.FormConvert();
+                this._FormEx.FormConvert();
             }
         }
     }
 
     public void FormAddLine(string pstrLine) {
-		if (this._FormData != null) {
+		if (this._FormEx != null) {
 			//Add ending CR2
 			//string sCR2 = sCR + "2";
 			//if (!pstrLine.EndsWith(sCR2)) {
 			//	pstrLine= pstrLine + sCR2;
 			//}
-			this._FormData.FormAddLine(pstrLine, sCR, sCF, sCB);
+			this._FormEx.FormAddLine(pstrLine, sCR, sCF, sCB);
 		}
 	}
 
 	public void FormShow(int plngMoveToX = 0, int plngMoveToY = 0, int plngDebugOnly = 0) {
-		//DesignGet(plngDesign)
-		// 0: this._lstDesign
-		// 1: this._lstDesignFlat
-		// 2: this._lstDesignField
-		if (this._FormData != null) {
+        //DesignGet(plngDesign)
+        // 0: this.FormData._lstDesign
+        // 1: this.FormData._lstDesignFlat
+        // 2: this.FormData._lstDesignField
+        if (this._FormEx != null) {
 			if (ScreenPos.ValidateCursorPosition(plngMoveToX, plngMoveToY)) {
 				string sCR2 = sCR + "2";
 				ResetActiveColor();
 
 				//First we save current position
-				this.ScreenPos.SavedX = this._FormData.StartX;
-				this.ScreenPos.SavedY = this._FormData.StartY;
+				this.ScreenPos.SavedX = this._FormEx.FormData.StartX;
+				this.ScreenPos.SavedY = this._FormEx.FormData.StartY;
 				this.SetPosition(this.ScreenPos.SavedX, this.ScreenPos.SavedY);
 
-				List<string> lstDesign = this._FormData.DesignGet(plngDebugOnly);
+                List<string> lstDesign = this._FormEx.DesignGet(this._FormEx.FormData.FormName, plngDebugOnly);
 				for (int i = 0; i < lstDesign.Count; i++) {
 					//Debug: Console.WriteLine("//" + lstDesign[i]);
 					string strData = lstDesign[i];
 					//System.Diagnostics.Debug.WriteLine($"[{strData}]");
 					Console.Write(strData + $"{sCR2}");
 				}
-				this.SetPosition(this._FormData.StartX + plngMoveToX, this._FormData.StartY + plngMoveToY);
+				this.SetPosition(this._FormEx.FormData.StartX + plngMoveToX, this._FormEx.FormData.StartY + plngMoveToY);
 			}
 		}
 	}
 
-	public FormData GetActiveForm() {
-		return this._FormData;
+	public FormEx GetActiveForm() {
+		return this._FormEx;
 	}
 
-	public void SetActiveForm(FormData pobjForm) {
+	public void SetActiveForm(FormEx pobjForm) {
 		if (pobjForm != null) {
-			this.FormBegin(pobjForm.FormName, pobjForm.StartX, pobjForm.StartY);
-			if (this._FormData != null) {
-				List<string> objDesign = pobjForm.Design;
+			this.FormBegin(pobjForm.FormData.FormName, pobjForm.FormData.StartX, pobjForm.FormData.StartY);
+			if (this._FormEx != null) {
+				List<string> objDesign = pobjForm.FormData.Design;
 
 				for (int i = 0; i < objDesign.Count; i++) {
 					string strLine = objDesign[i];
-					this._FormData.FormAddLine(strLine, sCR, sCF, sCB);
+					this._FormEx.FormAddLine(strLine, sCR, sCF, sCB);
 				}
 				this.FormEnd();
 			}
 		}
 	}
 
-	public class FormData {
-		private readonly ConsoleAppEx? _parent = null;
-		private List<string> _lstDesign = new List<string>();
-		private List<string> _lstDesignFlat = new List<string>();
-		private List<string> _lstDesignField = new List<string>();
-		private Dictionary<string, FormField> _FieldSha = new Dictionary<string, FormField>();
-		private Dictionary<FormField, string> _FieldPos = new Dictionary<FormField, string>();
+	public class FormDataEx {
+        public List<string> _Design = new List<string>();
+        public List<string> _DesignFlat = new List<string>();
+        public List<string> _DesignField = new List<string>();
+        public Dictionary<string, FormField> _DesignFieldSha = new Dictionary<string, FormField>();
+        public Dictionary<FormField, string> _DesignFieldPos = new Dictionary<FormField, string>();
 
-		public List<string> Design {
-			get; set;
-		} = new List<string>();
+        public List<string> Design {
+            get; set;
+        } = new List<string>();
 
-		public int StartX {
-			get; set;
-		} = 0;
+        public int StartX {
+            get; set;
+        } = 0;
 
-		public int StartY {
-			get; set;
-		} = 0;
+        public int StartY {
+            get; set;
+        } = 0;
 
-		//this need private set but json can't set it ?
-		public string FormName {
-			get; set;
-		} = "";
+        //this need private set but json can't set it ?
+        public string FormName {
+            get; set;
+        } = "";
 
-		//this need private set but json can't set it ?
-		public int MaxX {
-			get; set;
-		} = 0;
+        //this need private set but json can't set it ?
+        public int MaxX {
+            get; set;
+        } = 0;
 
-		//this need private set but json can't set it ?
-		public int MaxY {
-			get; set;
-		} = 0;
+        //this need private set but json can't set it ?
+        public int MaxY {
+            get; set;
+        } = 0;
+    }
+
+	//The idea is this class to hold all Form, 
+	//right now it hold only 1
+	public class FormEx {
+		public FormDataEx FormData = new FormDataEx();
 
 		[Newtonsoft.Json.JsonConstructor] // Aka [Json Constructor] is optional, Newtonsoft.Json will use private too
-		private FormData() {
+		private FormEx() {
 			//private because a FormData CANNOT go without FormName, you need to use the constructor
 		}
 
 		//public FormData(ConsoleAppEx pobjParent, string pstrFormName) {
-		public FormData(string pstrFormName) {
+		public FormEx(string pstrFormName) {
 			InitDesign(pstrFormName);
 		}
 
-		public FormData(ConsoleAppEx pobjParent, string pstrFormName) {
+		public FormEx(ConsoleAppEx pobjParent, string pstrFormName) {
 			InitDesign(pstrFormName);
-
-			//This is unused for now
-			this._parent = pobjParent;
 		}
 
 		private void InitDesign(string pstrFormName) {
-			this._lstDesign.Clear();
-			this._lstDesignFlat.Clear();
-			this._lstDesignField.Clear();
-			this._FieldSha.Clear();
-			this._FieldPos.Clear();
+			this.FormData._Design.Clear();
+			this.FormData._DesignFlat.Clear();
+			this.FormData._DesignField.Clear();
+			this.FormData._DesignFieldSha.Clear();
+			this.FormData._DesignFieldPos.Clear();
 
 			// b13: the [FormName] is mandatory for event CLSID, yet I don't validate it.
-			this.FormName = ConsoleAppEx.ToPascalCase(pstrFormName);
-			this.MaxX = Console.BufferWidth;
-			this.MaxY = Console.BufferHeight;
+			this.FormData.FormName = ConsoleAppEx.ToPascalCase(pstrFormName);
+			this.FormData.MaxX = Console.BufferWidth;
+			this.FormData.MaxY = Console.BufferHeight;
 		}
 
 		public void FormAddLine(string pstrLine, char sCR, char sCF, char sCB) {
 			string sCR0 = sCR + "0";
 			string strLine = pstrLine.Trim().Replace(sCR0, "");
 			if (!string.IsNullOrEmpty(strLine)) {
-				this.Design.Add(strLine);
+				this.FormData.Design.Add(strLine);
 
 				string strFixed = RemoveColorsAndFix(strLine, sCR, sCF, sCB, out string strFlat);
-				if (this._lstDesign.Count < this.MaxY) {
-					this._lstDesign.Add(strFixed);
-					this._lstDesignFlat.Add(strFlat);
+				if (this.FormData._Design.Count < this.FormData.MaxY) {
+					this.FormData._Design.Add(strFixed);
+					this.FormData._DesignFlat.Add(strFlat);
 				}
 			}
 		}
@@ -224,14 +227,14 @@ public partial class ConsoleAppEx : TextWriter {
 		public string FieldSearch(ref FormField pobjSearch) {
 			string strRet = "";
 
-			bool blnSuccess = this._FieldPos.TryGetValue(pobjSearch, out string? strSha);
+			bool blnSuccess = this.FormData._DesignFieldPos.TryGetValue(pobjSearch, out string? strSha);
 			if (blnSuccess) {
 				strRet = strSha + "";
 				FormField? objField = new FormField();
-				blnSuccess = this._FieldSha.TryGetValue(strRet, out objField);
+				blnSuccess = this.FormData._DesignFieldSha.TryGetValue(strRet, out objField);
 				if (!blnSuccess || objField == null) {
-					//if [this._FieldPos] is set, then [this._FieldSha] has to be set
-					throw new Exception("Programmer Error!");
+                    //if [this.FormData._DesignFieldPos] is set, then [this.FormData._DesignFieldSha] has to be set
+                    throw new Exception("Programmer Error!");
 				}
 
 				pobjSearch = objField;
@@ -241,11 +244,11 @@ public partial class ConsoleAppEx : TextWriter {
 		}
 
 		private void GetRealFormMaxXY() {
-			this.MaxX = 0;
-			this.MaxY = this._lstDesignFlat.Count;
-			for (int i = 0; i < this.MaxY; i++) {
-				if (this._lstDesignFlat[i].Length > this.MaxX) {
-					this.MaxX = this._lstDesignFlat[i].Length;
+			this.FormData.MaxX = 0;
+			this.FormData.MaxY = this.FormData._DesignFlat.Count;
+			for (int i = 0; i < this.FormData.MaxY; i++) {
+				if (this.FormData._DesignFlat[i].Length > this.FormData.MaxX) {
+					this.FormData.MaxX = this.FormData._DesignFlat[i].Length;
 				}
 			}
 		}
@@ -255,18 +258,18 @@ public partial class ConsoleAppEx : TextWriter {
 			List<string> lstFormFields = new List<string>();
 
 			// Prepare to create Field
-			this._FieldSha.Clear();
-			this._FieldPos.Clear();
-			string pstrFormName = this.FormName;
+			this.FormData._DesignFieldSha.Clear();
+			this.FormData._DesignFieldPos.Clear();
+			string pstrFormName = this.FormData.FormName;
 
 			//First we set MaxX
 			this.GetRealFormMaxXY();
 
 			//b13 work: _lstDesign must not contain Field Tag
 			// DEBUG ONLY
-			if ((this.MaxX > 0) && (this.MaxY > 0)) {
-				for (int lngPosY = 0; lngPosY < this.MaxY; lngPosY++) {
-					string strDataFlat = this._lstDesignFlat[lngPosY];
+			if ((this.FormData.MaxX > 0) && (this.FormData.MaxY > 0)) {
+				for (int lngPosY = 0; lngPosY < this.FormData.MaxY; lngPosY++) {
+					string strDataFlat = this.FormData._DesignFlat[lngPosY];
 					string strDataDesign = this.ConvertRow(lngPosY, strDataFlat);
 					lstFormFlat.Add(strDataDesign);
 
@@ -288,47 +291,47 @@ public partial class ConsoleAppEx : TextWriter {
 						this.ExtractFields(strDataFlat, pstrFormName, lngPosY);
 					}
 
-					//DesignGet(plngDesign)
-					// 0: this._lstDesign		: the one that show on screen in final
-					// 1: this._lstDesignFlat	:
-					// 2: this._lstDesignField
+                    //DesignGet(plngDesign)
+                    // 0: this.FormData._lstDesign		: the one that show on screen in final
+                    // 1: this.FormData._lstDesignFlat	:
+                    // 2: this.FormData._lstDesignField
 
-					//Finally, remove all button spacer section code
-					// EFGH
-					// ▞ | {START} of [COPY/PASTE] region
-					// ▚ |  {END}  of [COPY/PASTE] region
-					// ▌ | {START} of [BUTTON] region
-					// ▐ |  {END}  of [BUTTON] region
-					strDataFlat = FlushFieldTag(strDataFlat);
+                    //Finally, remove all button spacer section code
+                    // EFGH
+                    // ▞ | {START} of [COPY/PASTE] region
+                    // ▚ |  {END}  of [COPY/PASTE] region
+                    // ▌ | {START} of [BUTTON] region
+                    // ▐ |  {END}  of [BUTTON] region
+                    strDataFlat = FlushFieldTag(strDataFlat);
 					lstFormFields.Add(strDataFlat);
 				}
 
-				this._lstDesignFlat = lstFormFlat;
-				this._lstDesignField = lstFormFields;
+				this.FormData._DesignFlat = lstFormFlat;
+				this.FormData._DesignField = lstFormFields;
 				this.FormMergeBack();
 			} else {
 				//Let's reset instead of ruining the design process
-				this.MaxX = Console.BufferWidth;
-				this.MaxY = Console.BufferHeight;
+				this.FormData.MaxX = Console.BufferWidth;
+				this.FormData.MaxY = Console.BufferHeight;
 			}
 		}
 
 		public void DebugForm() {
 			Console.WriteLine("\r\nlstDesignFlat");
-			for (int o = 0; o < this._lstDesignFlat.Count; o++) {
-				Console.WriteLine($"{o:D2}: {this._lstDesignFlat[o]}");
+			for (int o = 0; o < this.FormData._DesignFlat.Count; o++) {
+				Console.WriteLine($"{o:D2}: {this.FormData._DesignFlat[o]}");
 			}
 			Console.WriteLine("------------------------------------------------------\r\n");
 
 			Console.WriteLine("_lstDesign");
-			for (int o = 0; o < this._lstDesign.Count; o++) {
-				Console.Write($"{o:D2}: {this._lstDesign[o]}");
+			for (int o = 0; o < this.FormData._Design.Count; o++) {
+				Console.Write($"{o:D2}: {this.FormData._Design[o]}");
 			}
 			Console.WriteLine("------------------------------------------------------\r\n");
 
 			Console.WriteLine("lstDesignField");
-			for (int o = 0; o < this._lstDesignField.Count; o++) {
-				Console.WriteLine($"{o:D2}: {this._lstDesignField[o]}");
+			for (int o = 0; o < this.FormData._DesignField.Count; o++) {
+				Console.WriteLine($"{o:D2}: {this.FormData._DesignField[o]}");
 			}
 			Console.WriteLine("------------------------------------------------------\r\n");
 		}
@@ -387,7 +390,7 @@ public partial class ConsoleAppEx : TextWriter {
 					// Affichage des positions X (Index)
 					string strRegionSha = $"[{pstrFormName.ToUpper()}: {plngPosY:D2}=>{lngStart:D2}x{lngEnd:D2}]=={lngFieldLength}";
 					string strSha = ShaEx.ComputeSha384(strRegionSha);
-					if (!this._FieldSha.ContainsKey(strSha)) {
+					if (!this.FormData._DesignFieldSha.ContainsKey(strSha)) {
 						//Now we add child Key (position)
 						for (int lngPosX = lngStart; lngPosX <= lngEnd; lngPosX++) {
 							FormField fieldPos = new FormField {
@@ -397,7 +400,7 @@ public partial class ConsoleAppEx : TextWriter {
 							};
 							//we keep default value except theses 3, this will allow research by position
 							
-							this._FieldPos.Add(fieldPos, strSha);
+							this.FormData._DesignFieldPos.Add(fieldPos, strSha);
 						}
 
 						//Field signature and length
@@ -411,7 +414,7 @@ public partial class ConsoleAppEx : TextWriter {
 							Length = lngFieldLength
 						};
 						
-						this._FieldSha.Add(strSha, fieldSign);
+						this.FormData._DesignFieldSha.Add(strSha, fieldSign);
 						//Debug.WriteLine($"//Y[{plngPosY}] : {lngStart} @ {lngEnd}");
 					}
 
@@ -680,18 +683,18 @@ public partial class ConsoleAppEx : TextWriter {
 			//Set our Data Lines [strBefore], [strCurrent], [strAfter]
 			string strBefore;
 			if (plngPosY - 1 >= 0) {
-				strBefore = this._lstDesignFlat[plngPosY - 1];
+				strBefore = this.FormData._DesignFlat[plngPosY - 1];
 			} else {
-				strBefore = new string(' ', this.MaxX);
+				strBefore = new string(' ', this.FormData.MaxX);
 			}
 
-			string strCurrent = this._lstDesignFlat[plngPosY];
+			string strCurrent = this.FormData._DesignFlat[plngPosY];
 
 			string strAfter;
-			if (plngPosY + 1 < this.MaxY) {
-				strAfter = this._lstDesignFlat[plngPosY + 1];
+			if (plngPosY + 1 < this.FormData.MaxY) {
+				strAfter = this.FormData._DesignFlat[plngPosY + 1];
 			} else {
-				strAfter = new string(' ', this.MaxX);
+				strAfter = new string(' ', this.FormData.MaxX);
 			}
 
 			//Let's get our Neighbors
@@ -739,9 +742,9 @@ public partial class ConsoleAppEx : TextWriter {
 		//public const char ColorCodeForeground = '®';    //char c = '\u00AE';
 		//public const char ColorCodeBackground = '©';    //char c = '\u00A9';
 		public void FormMergeBack() {
-			List<string> pobjForm = this._lstDesign;
+			List<string> pobjForm = this.FormData._Design;
 
-			if (pobjForm.Count != this._lstDesignFlat.Count) {
+			if (pobjForm.Count != this.FormData._DesignFlat.Count) {
 				throw new ArgumentException("Original and plain lists must have the same number of elements.");
 			}
 			
@@ -749,7 +752,7 @@ public partial class ConsoleAppEx : TextWriter {
 
 			for (int i = 0; i < pobjForm.Count; i++) {
 				string strFormY = pobjForm[i];
-				string strPlainList = this._lstDesignFlat[i];
+				string strPlainList = this.FormData._DesignFlat[i];
 				char[] chrMerged = strFormY.ToCharArray();
 
 				int plainIndex = 0;
@@ -768,30 +771,30 @@ public partial class ConsoleAppEx : TextWriter {
 				}
 
 				strFormY = FlushFieldTag(new string(chrMerged));
-				this._lstDesign[i] = strFormY;
+				this.FormData._Design[i] = strFormY;
 			}
 		}
-
-		public List<string> DesignGet(int lngDesignType = 0) {
+        
+        public List<string> DesignGet(string pstrFormName, int lngDesignType = 0) {
 			List<string> lstRet = new List<string>();
 
 			if (lngDesignType == 1) {
-				lstRet = new List<string>(this._lstDesignFlat);
+				lstRet = new List<string>(this.FormData._DesignFlat);
 			} else if (lngDesignType == 2) {
-				lstRet = new List<string>(this._lstDesignField);
+				lstRet = new List<string>(this.FormData._DesignField);
 			} else {
-				lstRet = new List<string>(this._lstDesign);
+				lstRet = new List<string>(this.FormData._Design);
 			}
 
 			return lstRet;
 		}
 
 		public string ExtractButton(int plngPosX, int plngPosY, int plngLength) {
-			if (plngPosY >= this._lstDesign.Count) {
+			if (plngPosY >= this.FormData._Design.Count) {
 				return string.Empty;
 			}
 
-			string pstrData = this._lstDesign[plngPosY];
+			string pstrData = this.FormData._Design[plngPosY];
 			if (string.IsNullOrEmpty(pstrData)) {
 				return string.Empty;
 			}
@@ -853,17 +856,17 @@ public partial class ConsoleAppEx : TextWriter {
 #region Parent FormCollection
 public sealed class FormCollection {
 	// It's [public] because [SettingsJson.Save] need to be able to save theses but you should use only the provided method
-	public Dictionary<string, FormData> Forms { get; set; } = new Dictionary<string, FormData>();
+	public Dictionary<string, FormEx> Forms { get; set; } = new Dictionary<string, FormEx>();
 
-	public void Add(FormData pobjForm, bool pblnThrow = true) {
+	public void Add(FormEx pobjForm, bool pblnThrow = true) {
 		if (pobjForm != null) {
-			string strFormName = ConsoleAppEx.ToPascalCase(pobjForm.FormName);
+			string strFormName = ConsoleAppEx.ToPascalCase(pobjForm.FormData.FormName);
 			if (this.Forms.ContainsKey(strFormName)) {
 				if (pblnThrow) {
-					throw new InvalidOperationException($"A Script with the Name [{pobjForm.FormName}] already exists");
+					throw new InvalidOperationException($"A Script with the Name [{pobjForm.FormData.FormName}] already exists");
 				}
 			} else {
-				this.Forms.Add(pobjForm.FormName, pobjForm);
+				this.Forms.Add(pobjForm.FormData.FormName, pobjForm);
 			}
 		}
 	}
