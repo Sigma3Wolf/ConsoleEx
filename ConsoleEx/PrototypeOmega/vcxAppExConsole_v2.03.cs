@@ -20,10 +20,6 @@
 
 #region PrototypeOmega namespace
 #pragma warning disable IDE0130
-using System.Drawing;
-
-using static PrototypeOmega.PInvokeEx;
-
 namespace PrototypeOmega;
 #pragma warning restore IDE0130
 #endregion PrototypeOmega namespace
@@ -670,12 +666,12 @@ public partial class ConsoleAppEx : TextWriter {
 	}
 
 	//Size is 1-100 but it only work for 1, 50, 100
-	public static void ChangeCaret(CaretSize penmSize) {
+	public static void ChangeCaret(PrototypeOmega.PInvokeEx.CaretSize penmSize) {
 		PInvokeEx.CONSOLE_CURSOR_INFO info;
 
 		uint dwSize = penmSize switch {
-			CaretSize.Block => 100,
-			CaretSize.Medium => 50,
+            PrototypeOmega.PInvokeEx.CaretSize.Block => 100,
+            PrototypeOmega.PInvokeEx.CaretSize.Medium => 50,
 			_ => 1
 		};
 		info.dwSize = dwSize;
