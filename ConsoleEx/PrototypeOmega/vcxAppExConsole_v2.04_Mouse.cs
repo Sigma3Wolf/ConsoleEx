@@ -10,13 +10,14 @@
 //** WARNING: If you modify this file, you MUST rename it to exclude the version number. :WARNING **//
 //**************************************************************************************************//
 //      Usage: Allow positionning of console output and adding console color capabilities.          //
-// Dependency: vcxAppExConsole_v2.02.cs                                                             //
+// Dependency: vcxAppExConsole_v2.04.cs                                                             //
 //**************************************************************************************************//
 // v2.00 - 2026-01-16:	** INITIAL RELEASE **;
 // v2.01 - 2026-01-16:	Cosmetic;
 // v2.02 - 2026-01-18:	Removing parameterless SetPosition();
 //						Removing Console.CursorTop and Console.CursorLeft reference (ANSI issue);
 // v2.03 - 2026-01-19:	Cosmetic;
+// v2.04 - 2026-01-23:	Preparing structure for multiple form;
 
 #region PrototypeOmega namespace
 #pragma warning disable IDE0130
@@ -88,7 +89,7 @@ public partial class ConsoleAppEx : TextWriter {
 								//╚═════╧═════╧═════╧═════╝
 
 								//string strField = $"({X:D2}x{Y:D2})";
-								PrototypeOmega.ConsoleAppEx.FormEx.FormField objButton = new PrototypeOmega.ConsoleAppEx.FormEx.FormField {
+								PrototypeOmega.FormEx.FormField objButton = new PrototypeOmega.FormEx.FormField {
 									FormName = pstrFormName.ToUpper(),
 									PosX = X,
 									PosY = Y
@@ -157,13 +158,13 @@ public partial class ConsoleAppEx : TextWriter {
 		}
 	}
 
-	private void FlashButtonOn(PrototypeOmega.ConsoleAppEx.FormEx.FormField pobjButton) {
+	private void FlashButtonOn(PrototypeOmega.FormEx.FormField pobjButton) {
 		int lngOldX = this.ScreenPos.X;
 		int lngOldY = this.ScreenPos.Y;
 		int lngNewX = pobjButton.StartX;
 		int lngNewY = pobjButton.PosY;
 		string strLabel = this._FormEx.ExtractButton(lngNewX, lngNewY, pobjButton.Length);
-		PrototypeOmega.ConsoleAppEx.FormEx.FormField objButton = pobjButton with {
+		PrototypeOmega.FormEx.FormField objButton = pobjButton with {
 			PosX = lngOldX,
 			PosY = lngOldY,
 			StartX = lngNewX,
@@ -179,7 +180,7 @@ public partial class ConsoleAppEx : TextWriter {
 		this.FlashButtonOff(objButton);
 	}
 
-	private long FlashButtonOff(PrototypeOmega.ConsoleAppEx.FormEx.FormField pobjButton) {
+	private long FlashButtonOff(PrototypeOmega.FormEx.FormField pobjButton) {
 		int lngOldX = pobjButton.PosX;
 		int lngOldY = pobjButton.PosY;
 		int lngNewX = pobjButton.StartX;

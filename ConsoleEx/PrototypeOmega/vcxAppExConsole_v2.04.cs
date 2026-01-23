@@ -17,6 +17,7 @@
 // v2.02 - 2026-01-18:	Removing parameterless SetPosition();
 //						Removing Console.CursorTop and Console.CursorLeft reference (ANSI issue);
 // v2.03 - 2026-01-19:	Fix Saving; Add Carret modification;
+// v2.04 - 2026-01-23:	Preparing structure for multiple form;
 
 #region PrototypeOmega namespace
 #pragma warning disable IDE0130

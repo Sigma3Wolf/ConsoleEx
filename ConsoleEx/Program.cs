@@ -54,10 +54,10 @@ namespace ConsoleEx {
 
             //We need to declare the name we give to a particular Form.
             //This name is stored in PascalCase because it's a dictionary Key
-            string strFormName = ConsoleAppEx.ToPascalCase("Calculator");
+            string strFormName = FormEx.ToPascalCase("Calculator");
 
             //Lets read our saved form if it exist
-            PrototypeOmega.ConsoleAppEx.FormEx? _objFormData = null;
+            PrototypeOmega.FormEx? _objFormData = null;
             bool blnSuccess = JsonSettings.data.FormCollection.Forms.TryGetValue(strFormName, out _objFormData);
             if (blnSuccess && _objFormData != null) {
                 //Ok it exist, let's restore it's definition
@@ -68,7 +68,7 @@ namespace ConsoleEx {
                 ConsoleHelper.CreateCalculatorForm(strFormName);
 
                 //Add our object to be saved
-                PrototypeOmega.ConsoleAppEx.FormEx objFormData;
+                PrototypeOmega.FormEx objFormData;
                 objFormData = objConsole.GetActiveForm();
 
                 //Because we want to update our change, we need to remove/add from our collection
