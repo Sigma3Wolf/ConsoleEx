@@ -57,21 +57,17 @@ namespace ConsoleEx {
             string strFormName = FormEx.ToPascalCase("Calculator");
 
             //Lets read our saved form if it exist
-            PrototypeOmega.FormEx? _objForm = null;
-            bool blnSuccess = JsonSettings.data.FormCollection.Forms.TryGetValue(strFormName, out _objForm);
+            PrototypeOmega.FormEx? FormCalculator = null;
+            bool blnSuccess = JsonSettings.data.FormCollection.dicFormEx.TryGetValue(strFormName, out FormCalculator);
             //blnSuccess = false; //we use this when we need to recreate the JsonSettings.json file
-            if (blnSuccess && _objForm != null) {
-                //Ok it exist, let's restore it's definition
-                FormEx.SetActiveForm(_objForm);
-            } else {
+            if (!blnSuccess || FormCalculator == null) {
                 //Well, you never created that form or it was not saved on your disk,
                 //so here is the definition let's recreate from scratch
-                ConsoleHelper.CreateCalculatorForm(strFormName);
-                _objForm = FormEx.GetActiveForm(); //Coming from CreateCalculatorForm, so NOT NULL;
+                FormCalculator = ConsoleHelper.CreateCalculatorForm(strFormName);
 
-                //Because we want to update our change, we need to remove/add from our collection
+                //Because we want to update our change, we need to remove/add from our collection when we force blnSuccess = false
                 JsonSettings.data.FormCollection.Remove(strFormName);
-                JsonSettings.data.FormCollection.Add(_objForm, false);
+                JsonSettings.data.FormCollection.Add(FormCalculator);
             }
 
             //Before showing our form, let's erase the screen
@@ -102,14 +98,14 @@ namespace ConsoleEx {
             //This is the Initial position of the cursor in the Calculator, set it to a Field object
             int LedPosX = 19;
             int LedPosY = 2;
-            objConsole.FormShow(_objForm, LedPosX, LedPosY);
+            objConsole.FormShow(FormCalculator, LedPosX, LedPosY);
 
             //and finally, we wait for Event and you'll handle the rest of program inside thoses event
             //SetEventData() and HandleConsoleButtonEvent()
 
             //Ok, I just found a bug... I don't clear buffer here so if last key hit was ESC, it exit...
             //I'll fix that. Beside that, it's now time to use mouse and check the event firing in console output
-            objConsole.Mouse.WaitForEvent(_objForm);
+            objConsole.Mouse.WaitForEvent(FormCalculator);
 
             // ==== THE END. ====
             //Here the program exit...

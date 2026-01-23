@@ -26,7 +26,7 @@ public class FormEx {
     private static char sCR;  //NewLine
     private static char sCF;  //Foreground
     private static char sCB;  //Background
-    private static FormEx? _tmpFormEx = null;
+    //private static FormEx? _tmpFormEx = null;
 
     private const string strSYMBOLS = "╚╝╔╗╦╬╤╩╧╠╣╞╡║═ ┌┐└┘┬┼╥╨┴╟╢├┤│─";
     public FormDataEx FormData = new FormDataEx();
@@ -36,73 +36,49 @@ public class FormEx {
         //private because a FormData CANNOT go without FormName, you need to use the constructor
     }
 
-    public FormEx(string pstrFormName) {
+    public FormEx(string pstrFormName, int plngStartX, int plngStartY) {
+        string strFormName = ToPascalCase(pstrFormName);
+        if (string.IsNullOrWhiteSpace(strFormName)) {
+            throw new ArgumentException("Invalid FormName");
+        }
+        
         sCR = PrototypeOmega.ConsoleAppEx.sCR;
         sCF = PrototypeOmega.ConsoleAppEx.sCF;
         sCB = PrototypeOmega.ConsoleAppEx.sCB;
 
-        // b13: the [FormName] is mandatory for event CLSID, yet I don't validate it.
-        this.FormData.FormName = ToPascalCase(pstrFormName);
+        this.FormData.FormName = strFormName;
+        this.FormData.StartX = plngStartX;
+        this.FormData.StartY = plngStartY;
         this.FormData.MaxX = Console.BufferWidth;
         this.FormData.MaxY = Console.BufferHeight;
     }
 
-    public static FormEx? GetActiveForm() {
-        return _tmpFormEx;
-    }
+    //public void SetActiveForm2(FormEx pobjForm) {
+    //    if (pobjForm != null) {
+    //        //NewFormBegin(pobjForm.FormData.FormName, pobjForm.FormData.StartX, pobjForm.FormData.StartY);
+    //        for (int i = 0; i < pobjForm.FormData.Design.Count; i++) {
+    //            string strLine = pobjForm.FormData.Design[i];
+    //            NewFormAddLine(strLine);
+    //        }
 
-    public static void SetActiveForm(FormEx pobjForm) {
-        if (pobjForm != null) {
-            NewFormBegin(pobjForm.FormData.FormName, pobjForm.FormData.StartX, pobjForm.FormData.StartY);
-            if (_tmpFormEx != null) {
-                List<string> objDesign = pobjForm.FormData.Design;
+    //        //this.SetPosition(0, 0);
+    //        //Console.Write("Loading necessary modules...");
+    //        this.FormConvert();
+    //        //this.SetPosition(0, 0);
+    //        //Console.Write("                            ");
+    //    }
+    //}
 
-                for (int i = 0; i < objDesign.Count; i++) {
-                    string strLine = objDesign[i];
-                    NewFormAddLine(strLine);
-                }
-                NewFormEnd();
-            }
-        }
-    }
+    public void NewFormAddLine(string pstrLine) {
+        string sCR0 = sCR + "0";
+        string strLine = pstrLine.Trim().Replace(sCR0, "");
+        if (!string.IsNullOrEmpty(strLine)) {
+            this.FormData.Design.Add(strLine);
 
-    public static void NewFormBegin(string pstrFormName, int plngStartX, int plngStartY) {
-        string strFormName = FormEx.ToPascalCase(pstrFormName);
-        if (string.IsNullOrEmpty(strFormName)) {
-            throw new Exception("FormName must be set");
-        }
-
-        _tmpFormEx = new FormEx(strFormName);
-        _tmpFormEx.FormData.StartX = plngStartX;
-        _tmpFormEx.FormData.StartY = plngStartY;
-    }
-
-    public static void NewFormEnd(bool pblnShowMessage = true) {
-        if (_tmpFormEx != null) {
-            if (pblnShowMessage) {
-                //this.SetPosition(0, 0);
-                //Console.Write("Loading necessary modules...");
-                _tmpFormEx.FormConvert();
-                //this.SetPosition(0, 0);
-                //Console.Write("                            ");
-            } else {
-                _tmpFormEx.FormConvert();
-            }
-        }
-    }
-
-    public static void NewFormAddLine(string pstrLine) {
-        if (_tmpFormEx != null) {
-            string sCR0 = sCR + "0";
-            string strLine = pstrLine.Trim().Replace(sCR0, "");
-            if (!string.IsNullOrEmpty(strLine)) {
-                _tmpFormEx.FormData.Design.Add(strLine);
-
-                string strFixed = RemoveColorsAndFix(strLine, out string strFlat);
-                if (_tmpFormEx.FormData._Design.Count < _tmpFormEx.FormData.MaxY) {
-                    _tmpFormEx.FormData._Design.Add(strFixed);
-                    _tmpFormEx.FormData._DesignFlat.Add(strFlat);
-                }
+            string strFixed = RemoveColorsAndFix(strLine, out string strFlat);
+            if (this.FormData._Design.Count < this.FormData.MaxY) {
+                this.FormData._Design.Add(strFixed);
+                this.FormData._DesignFlat.Add(strFlat);
             }
         }
     }
@@ -139,7 +115,7 @@ public class FormEx {
     public string FieldSearch(ref FormField pobjSearch) {
         string strRet = "";
 
-        bool blnSuccess = this.FormData._DesignFieldPos.TryGetValue(pobjSearch, out string? strSha);
+        bool blnSuccess = this.FormData._DesignFieldPos.TryGetValue(pobjSearch.ToString(), out string? strSha);
         if (blnSuccess) {
             strRet = strSha + "";
             FormField? objField = new FormField();
@@ -312,7 +288,7 @@ public class FormEx {
                         };
                         //we keep default value except theses 3, this will allow research by position
 
-                        this.FormData._DesignFieldPos.Add(fieldPos, strSha);
+                        this.FormData._DesignFieldPos.Add(fieldPos.ToString(), strSha);
                     }
 
                     //Field signature and length
@@ -358,9 +334,9 @@ public class FormEx {
         public int EndX { get; init; } = 0;         //The Last PosX
         public int Length { get; init; } = 0;       //The Length of the Button from PosX1 to PosX2 without counting Color Code, mainly [PosX2 - PosX1 + 1]
         public int Length2 { get; init; } = 0;      //unused for now, same as Length but counting Color Code, this would help for ExtractButton()
-        public string Label { get; init; } = "";
+        public string Label { get; init; } = ".";
 
-        //This is for Debug only
+        //This is for Debug only but it interfear
         public override string ToString() {
             string strField = $"[FormName: {this.FormName} => [{FieldType}]:{PosX}x{PosY}, Start: {this.StartX:D2}, End: {this.EndX:D2}, Length: {this.Length}]";
             return strField;
@@ -768,7 +744,7 @@ public class FormEx {
         public List<string> _DesignFlat = new List<string>();
         public List<string> _DesignField = new List<string>();
         public Dictionary<string, FormField> _DesignFieldSha = new Dictionary<string, FormField>();
-        public Dictionary<FormField, string> _DesignFieldPos = new Dictionary<FormField, string>();
+        public Dictionary<string, string> _DesignFieldPos = new Dictionary<string, string>();
 
         public List<string> Design {
             get; set;
@@ -800,19 +776,20 @@ public class FormEx {
 }
 
 #region Parent FormCollection
-public sealed class FormCollection {
+public class FormCollection {
     // It's [public] because [SettingsJson.Save] need to be able to save theses but you should use only the provided method
-    public Dictionary<string, FormEx> Forms { get; set; } = new Dictionary<string, FormEx>();
-
+    public Dictionary<string, FormEx> dicFormEx { get; set; } = new Dictionary<string, FormEx>();
+    
     public void Add(FormEx? pobjForm, bool pblnThrow = true) {
         if (pobjForm != null) {
             string strFormName = FormEx.ToPascalCase(pobjForm.FormData.FormName);
-            if (this.Forms.ContainsKey(strFormName)) {
+            if (this.dicFormEx.ContainsKey(strFormName)) {
                 if (pblnThrow) {
                     throw new InvalidOperationException($"A Script with the Name [{pobjForm.FormData.FormName}] already exists");
                 }
             } else {
-                this.Forms.Add(pobjForm.FormData.FormName, pobjForm);
+                pobjForm.FormData.FormName = strFormName;
+                this.dicFormEx.Add(pobjForm.FormData.FormName, pobjForm);
             }
         }
     }
@@ -821,7 +798,7 @@ public sealed class FormCollection {
         string strFormName = FormEx.ToPascalCase(pstrFormName);
         bool blnRet = false;
 
-        if (this.Forms.ContainsKey(strFormName)) {
+        if (this.dicFormEx.ContainsKey(strFormName)) {
             blnRet = true;
         }
 
@@ -832,8 +809,8 @@ public sealed class FormCollection {
         string strFormName = FormEx.ToPascalCase(pstrFormName);
         bool blnRet = false;
 
-        if (this.Forms.ContainsKey(strFormName)) {
-            this.Forms.Remove(strFormName);
+        if (this.dicFormEx.ContainsKey(strFormName)) {
+            this.dicFormEx.Remove(strFormName);
             blnRet = true;
         }
 
