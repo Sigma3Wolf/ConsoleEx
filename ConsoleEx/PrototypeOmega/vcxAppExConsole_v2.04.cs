@@ -11,6 +11,7 @@
 //**************************************************************************************************//
 //      Usage: Allow positionning of console output and adding console color capabilities.          //
 // Dependency: vcxPInvoke                                                                           //
+//             vcxAppExConsole_v2.04_Forms.cs                                                       //
 //**************************************************************************************************//
 // v2.00 - 2026-01-13:	** INITIAL RELEASE **;
 // v2.01 - 2026-01-16:	Cosmetic;
@@ -48,24 +49,24 @@ namespace PrototypeOmega;
 
 
 // Usage example: SEE END OF FILE
-public partial class ConsoleAppEx : TextWriter {
+public class ConsoleAppEx : TextWriter {
 	private bool _disposed;
 	private static int _isActive;
 	private readonly TextWriter _original;
 	private readonly System.Text.Encoding _originalEncoding;
-	private static IntPtr _InputHandle = IntPtr.Zero;
 	private readonly bool _ansiEnabled;
 	private bool _ShouldProbablyAlwaysBeFalse = false;  //This only say if we should keep track for Height before exiting. I don't see WHEN it should be true except when Forcing a CrLf, we should revisit the coding on this.
 	public event EventHandler<ConsoleEventArgs>? ConsoleEvent = null;
-
-	//Const and alike
-	public const char sCR = 'ª';       //NewLine		=> char c = '\u00AA'; [ª0] don't change CursorPos, [ª1] CrLf
+	
+    //Const and alike
+    public const char sCR = 'ª';	//NewLine		=> char c = '\u00AA'; [ª0] don't change CursorPos, [ª1] CrLf
 	public const char sCF = '®';    //Foreground	=> char c = '\u00AE';
 	public const char sCB = '©';    //Background	=> char c = '\u00A9';
 	private readonly string CrLf = Environment.NewLine;
 
 	public static bool _RunningProgram = true;
-	public LastErrorEx LastError;
+    public MouseEx Mouse;
+    public LastErrorEx LastError;
 	public ScreenPosEx ScreenPos;
 	private (int r, int g, int b) ForegroundColorRgb;
 	private (int r, int g, int b) BackgroundColorRgb;
@@ -96,18 +97,23 @@ public partial class ConsoleAppEx : TextWriter {
 			throw;
 		}
 
-		this._ansiEnabled = TryEnableAnsi();
+        this._ansiEnabled = TryEnableAnsi();
 		this.ForegroundColorRgb = GetConsoleColorRgb(Console.ForegroundColor);
 		this.BackgroundColorRgb = GetConsoleColorRgb(Console.BackgroundColor);
 
-		this.LastError = new LastErrorEx();
-		this.ScreenPos = new ScreenPosEx(this);
+        this.Mouse = new(this);
+        this.LastError = new();
+		this.ScreenPos = new(this);
 		this.ColorList = this.DefineColorList();    //execute this.ResetColor();
 	}
 	//Mandatory
 	public override System.Text.Encoding Encoding => System.Text.Encoding.UTF8;
 
-	protected virtual void OnConsoleEvent(int plngEventNo, string pstrEventData) {
+	public void RaiseConsoleEvent(int plngEventNo, string pstrEventData) {
+		this.OnConsoleEvent(plngEventNo, pstrEventData);
+    }
+
+    protected virtual void OnConsoleEvent(int plngEventNo, string pstrEventData) {
 		// Use the null-conditional operator to fire the event safely
 		ConsoleEvent?.Invoke(this, new ConsoleEventArgs { EventNo = plngEventNo, EventData = pstrEventData });
 	}
@@ -184,65 +190,34 @@ public partial class ConsoleAppEx : TextWriter {
 		}
 	}
 
-	//public void ShowField(string pstrData, int plngFieldLen = 0) {
-	//	int lngMaxSpace;
-	//	int lngSpace;
+    public void FormShow(FormEx? pobjForm, int plngMoveToX = 0, int plngMoveToY = 0, int plngDebugOnly = 0) {
+        //DesignGet(plngDesign)
+        // 0: this.FormData._lstDesign
+        // 1: this.FormData._lstDesignFlat
+        // 2: this.FormData._lstDesignField
+        if (pobjForm != null) {
+            if (ScreenPos.ValidateCursorPosition(plngMoveToX, plngMoveToY)) {
+                string sCR2 = sCR + "2";
+                ResetActiveColor();
 
-	//	string strData = "";
-	//	int lngScreenPosX = ScreenPos.X + ScreenPos.DeltaX;
-	//	if (lngScreenPosX > 0) {
-	//		if (ScreenPos.X == 0) {
-	//			this.ScreenPos.DeltaX = this.ScreenPos.DeltaX - 1;
-	//			this.SetXPosition();
+                //First we save current position
+                this.ScreenPos.SavedX = pobjForm.FormData.StartX;
+                this.ScreenPos.SavedY = pobjForm.FormData.StartY;
+                this.SetPosition(this.ScreenPos.SavedX, this.ScreenPos.SavedY);
 
-	//			lngMaxSpace = Console.BufferWidth - 2 - this.ScreenPos.DeltaX - this.ScreenPos.X;
-	//			lngSpace = (plngFieldLen < 1) ? lngMaxSpace : plngFieldLen;
-	//			if (lngSpace > lngMaxSpace) {
-	//				lngSpace = lngMaxSpace;
-	//			}
-	//			strData = "[" + new string(' ', lngSpace) + "]";
+                List<string> lstDesign = pobjForm.DesignGet(pobjForm.FormData.FormName, plngDebugOnly);
+                for (int i = 0; i < lstDesign.Count; i++) {
+                    //Debug: Console.WriteLine("//" + lstDesign[i]);
+                    string strData = lstDesign[i];
+                    //System.Diagnostics.Debug.WriteLine($"[{strData}]");
+                    Console.Write(strData + $"{sCR2}");
+                }
+                this.SetPosition(pobjForm.FormData.StartX + plngMoveToX, pobjForm.FormData.StartY + plngMoveToY);
+            }
+        }
+    }
 
-	//			this._original.Write(strData);
-	//			this.Flush();
-
-	//			this.ScreenPos.DeltaX = this.ScreenPos.DeltaX + 1;
-	//			this.SetXPosition();
-	//			this.WriteAndMove(pstrData);
-	//		} else {
-	//			this.ScreenPos.UpdateX(this.ScreenPos.X - 1);
-	//			this.SetXPosition();
-	//			lngMaxSpace = Console.BufferWidth - 2 - this.ScreenPos.DeltaX - this.ScreenPos.X;
-	//			lngSpace = (plngFieldLen < 1) ? lngMaxSpace : plngFieldLen;
-	//			if (lngSpace > lngMaxSpace) {
-	//				lngSpace = lngMaxSpace;
-	//			}
-	//			strData = "[" + new string(' ', lngSpace) + "]";
-
-	//			this._original.Write(strData);
-	//			this.Flush();
-
-	//			this.ScreenPos.UpdateX(this.ScreenPos.X + 1);
-	//			this.SetXPosition();
-	//			this.WriteAndMove(pstrData);
-	//		}
-	//	} else {
-	//		lngMaxSpace = Console.BufferWidth - 2 - ScreenPos.DeltaX - ScreenPos.X;
-	//		lngSpace = (plngFieldLen < 1) ? lngMaxSpace : plngFieldLen;
-	//		if (lngSpace > lngMaxSpace) {
-	//			lngSpace = lngMaxSpace;
-	//		}
-	//		strData = "[" + new string(' ', lngSpace) + "]";
-
-	//		this._original.Write(strData);
-	//		this.Flush();
-
-	//		this.ScreenPos.UpdateX(this.ScreenPos.X + 1);
-	//		this.SetXPosition();
-	//		this.WriteAndMove(pstrData);
-	//	}
-	//}
-
-	private void ColorWrite(string pstrData) {
+    private void ColorWrite(string pstrData) {
 		bool blnDebug = false;
 
 		(int r, int g, int b) colTemp = (0, 0, 0);

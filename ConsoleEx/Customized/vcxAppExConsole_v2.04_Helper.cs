@@ -82,7 +82,7 @@ public static class ConsoleHelper {
         string sCFP = $"{sCF}P";    //Orange (Error)
 
         // Creating New Form
-        _objConsole?.FormBegin(pstrMainFormName, 5, 0);
+        FormEx.NewFormBegin(pstrMainFormName, 5, 0);
         //_objConsole.FormAddLine($"{sCFI}╬╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╪╬");
 
         // ABCD EFGH
@@ -99,22 +99,22 @@ public static class ConsoleHelper {
         // ▐ |  {END}  of [BUTTON] region		U+2590
 
         //This is a Calculator Form
-        _objConsole?.FormAddLine($"{sCFI}    {sCR0}    {sCR0}   {sCR0}   {sCR0}   {sCR0}   {sCR0}  ▌X▐");
-        _objConsole?.FormAddLine($"╬{sCR0}╪╪╪{sCR0}╪╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
-        _objConsole?.FormAddLine($"╬{sCFP} E▞{sCFF}-{sCFD}500,000,000,000{sCFF}.{sCFD}00▚{sCFI}╬");
-        _objConsole?.FormAddLine($"╬╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╬");
-        _objConsole?.FormAddLine($"╬▌{sCFF} C {sCFI}▐┼▌{sCFC}MR {sCFI}▐┼▌{sCFC}M+ {sCFI}▐┼▌{sCFC}M- {sCFI}▐╬");
-        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        _objConsole?.FormAddLine($"╬▌{sCFC}POW{sCFI}▐┼▌{sCFC}MOD{sCFI}▐┼ {sCR0}   {sCR0} ┼ {sCR0}   {sCR0} ╬");
-        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        _objConsole?.FormAddLine($"╬▌{sCFH} 7 {sCFI}▐┼▌{sCFH} 8 {sCFI}▐┼▌{sCFH} 9 {sCFI}▐┼▌{sCFE} + {sCFI}▐╬");
-        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        _objConsole?.FormAddLine($"╬▌{sCFH} 4 {sCFI}▐┼▌{sCFH} 5 {sCFI}▐┼▌{sCFH} 6 {sCFI}▐┼▌{sCFE} - {sCFI}▐╬");
-        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        _objConsole?.FormAddLine($"╬▌{sCFH} 1 {sCFI}▐┼▌{sCFH} 2 {sCFI}▐┼▌{sCFH} 3 {sCFI}▐┼▌{sCFE} * {sCFI}▐╬");
-        _objConsole?.FormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
-        _objConsole?.FormAddLine($"╬▌{sCFH} 0 {sCFI}▐┼▌{sCFF} . {sCFI}▐┼▌{sCFC}+/-{sCFI}▐┼▌{sCFE} / {sCFI}▐╬");
-        _objConsole?.FormAddLine($"╬╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
+        FormEx.NewFormAddLine($"{sCFI}    {sCR0}    {sCR0}   {sCR0}   {sCR0}   {sCR0}   {sCR0}  ▌X▐");
+        FormEx.NewFormAddLine($"╬{sCR0}╪╪╪{sCR0}╪╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
+        FormEx.NewFormAddLine($"╬{sCFP} E▞{sCFF}-{sCFD}500,000,000,000{sCFF}.{sCFD}00▚{sCFI}╬");
+        FormEx.NewFormAddLine($"╬╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╪╬{sCR0}╬╬╬{sCR0}╬╬");
+        FormEx.NewFormAddLine($"╬▌{sCFF} C {sCFI}▐┼▌{sCFC}MR {sCFI}▐┼▌{sCFC}M+ {sCFI}▐┼▌{sCFC}M- {sCFI}▐╬");
+        FormEx.NewFormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        FormEx.NewFormAddLine($"╬▌{sCFC}POW{sCFI}▐┼▌{sCFC}MOD{sCFI}▐┼ {sCR0}   {sCR0} ┼ {sCR0}   {sCR0} ╬");
+        FormEx.NewFormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        FormEx.NewFormAddLine($"╬▌{sCFH} 7 {sCFI}▐┼▌{sCFH} 8 {sCFI}▐┼▌{sCFH} 9 {sCFI}▐┼▌{sCFE} + {sCFI}▐╬");
+        FormEx.NewFormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        FormEx.NewFormAddLine($"╬▌{sCFH} 4 {sCFI}▐┼▌{sCFH} 5 {sCFI}▐┼▌{sCFH} 6 {sCFI}▐┼▌{sCFE} - {sCFI}▐╬");
+        FormEx.NewFormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        FormEx.NewFormAddLine($"╬▌{sCFH} 1 {sCFI}▐┼▌{sCFH} 2 {sCFI}▐┼▌{sCFH} 3 {sCFI}▐┼▌{sCFE} * {sCFI}▐╬");
+        FormEx.NewFormAddLine($"╫┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼┼┼{sCR0}┼╫");
+        FormEx.NewFormAddLine($"╬▌{sCFH} 0 {sCFI}▐┼▌{sCFF} . {sCFI}▐┼▌{sCFC}+/-{sCFI}▐┼▌{sCFE} / {sCFI}▐╬");
+        FormEx.NewFormAddLine($"╬╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╪╪{sCR0}╪╬");
 
         //Giving the command to create the real Form from the template we just give.
         //It will create the form with Color and Fields (Button)
@@ -122,7 +122,7 @@ public static class ConsoleHelper {
         //a FormEnd() by default show the message "Loading necessary modules..." at (0, 0)
         //and erase it when the form is converted. We can disable this by argument false
         //the convert is time consuming and can take up to 1 second (very slow)
-        _objConsole?.FormEnd(false);
+        FormEx.NewFormEnd(false);
     }
 
     public static void OnConsoleEvent(object? sender, ConsoleEventArgs e) {
