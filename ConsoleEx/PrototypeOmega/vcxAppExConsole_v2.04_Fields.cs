@@ -10,7 +10,7 @@
 //** WARNING: If you modify this file, you MUST rename it to exclude the version number. :WARNING **//
 //**************************************************************************************************//
 //      Usage: Allow positionning of console output and adding console color capabilities.          //
-// Dependency: vcxAppExConsole_v2.04.cs                                                             //
+// Dependency:                                                                                      //
 //**************************************************************************************************//
 // v2.04 - 2026-01-23:	** INITIAL RELEASE **;
 

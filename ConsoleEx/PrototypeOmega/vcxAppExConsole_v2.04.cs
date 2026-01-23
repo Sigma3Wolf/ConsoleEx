@@ -12,6 +12,7 @@
 //      Usage: Allow positionning of console output and adding console color capabilities.          //
 // Dependency: vcxPInvoke                                                                           //
 //             vcxAppExConsole_v2.04_Forms.cs                                                       //
+//             vcxAppExConsole_v2.04_Mouse.cs                                                       //
 //**************************************************************************************************//
 // v2.00 - 2026-01-13:	** INITIAL RELEASE **;
 // v2.01 - 2026-01-16:	Cosmetic;
